@@ -60,12 +60,20 @@ def attempt_form_submission(job_url, user_profile):
 
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         for label in soup.find_all("label"):
-            label_text = label.get_text(strip=True)
-            placeholder = label.find_next("input") or label.find_next("textarea")
-            placeholder_text = placeholder.get("placeholder") if placeholder else None
-            value = identify_field_and_fill(label_text, placeholder_text)
-            if value:
-                form_data[label_text.lower()] = value
+            try:
+                label_text = label.get_text(strip=True)
+                placeholder = label.find_next("input") or label.find_next("textarea")
+                placeholder_text = placeholder.get("placeholder") if placeholder else None
+
+                value = identify_field_and_fill(label_text, placeholder_text)
+
+                if value:
+                    form_data[label_text.lower()] = value
+                else:
+                    print(f"[WARNING] No value identified for label '{label_text}'.")
+
+            except Exception as e:
+                print(f"[ERROR] Failed processing form label: {e}")
 
         fill_and_submit_form(driver, form_data)
         print("[FORM FILLED] Form filled and submitted.")
