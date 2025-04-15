@@ -1,7 +1,7 @@
 from job_scoring import score_job_relevance
 
 # Adjustable threshold (0 to 10)
-RELEVANCE_THRESHOLD = 7.0
+RELEVANCE_THRESHOLD = 5.0
 
 def is_relevant_job(job_data, user_profile):
     """

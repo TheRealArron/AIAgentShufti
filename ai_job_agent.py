@@ -11,7 +11,6 @@ from form_filler import fill_and_submit_form
 from field_mapper import identify_field_and_fill
 from job_scoring import score_job_relevance
 
-
 APPLIED_JOBS_FILE = "applied_jobs.json"
 LOG_FILE = "application_log.txt"
 
@@ -95,21 +94,13 @@ class AIJobAgent:
         self.applied_jobs = load_applied_jobs()
 
     async def run(self, log_callback):
-        jobs = await self.session.scraper.crawl_jobs(self.user_profile)
+        jobs = await self.session.scraper.crawl_jobs(user_profile=self.user_profile)
         for job in jobs:
             job_id = job.get("id")
             if not job_id or job_id in self.applied_jobs:
                 continue
 
             logging.debug(f"[DEBUG] Job data: {job}")
-
-            # Construct a complete user_profile dictionary
-            user_profile = {
-                "name": self.user_name,
-                "email": self.user_email,
-                "skills": self.user_skills,
-                "bio": self.user_bio  # Include bio here
-            }
 
             # Score relevance
             score = score_job_relevance(
@@ -121,14 +112,14 @@ class AIJobAgent:
 
             log_callback(f"[RELEVANCE SCORE] Job {job_id} scored {score:.2f}\n")
 
-            if not is_relevant_job(job):
+            if not is_relevant_job(job, self.user_profile):
                 log_callback(f"[SKIPPED] Job {job_id} deemed irrelevant.\n")
                 continue
 
             # Form-based application detection
             if any(kw in job["description"].lower() for kw in ["fill out", "application form", "submit your info"]):
-                logging.debug(f"[DEBUG] Received user_profile: {user_profile}")
-                attempt_form_submission(job["link"], user_profile)
+                logging.debug(f"[DEBUG] Attempting form submission for {job_id}")
+                attempt_form_submission(job["link"], self.user_profile)
                 log_callback(f"[FORM SUBMITTED] Job {job_id}\n")
                 self.applied_jobs.append(job_id)
                 save_applied_jobs(self.applied_jobs)
@@ -155,6 +146,12 @@ class AIJobAgent:
 
 
 async def run_agent_with_name(email, password, name, skills, bio, log_callback=print):
-    session = ShuftiSession(email, password, user_name=name)
-    agent = AIJobAgent(session, user_name=name, user_email=email, user_skills=skills, user_bio=bio)  # Pass bio here
+    user_profile = {
+        "name": name,
+        "email": email,
+        "skills": skills,
+        "bio": bio
+    }
+    session = ShuftiSession(email, password, user_name=name, user_profile=user_profile)
+    agent = AIJobAgent(session, user_name=name, user_email=email, user_skills=skills, user_bio=bio)
     await agent.run(log_callback)
