@@ -2,29 +2,41 @@
 from transformers import T5ForConditionalGeneration, T5Tokenizer
 import torch
 
-# Load FLAN-T5 base model & tokenizer
+# Load model & tokenizer once
 model_name = "google/flan-t5-small"
 tokenizer = T5Tokenizer.from_pretrained(model_name)
 model = T5ForConditionalGeneration.from_pretrained(model_name)
 
 def generate_application_message(job_title, job_description, job_requirements=None, user_profile=None):
-    profile_text = f"My name is {user_profile['name']}. I have experience in {', '.join(user_profile['skills'])}. {user_profile['bio']}"
+    if not user_profile:
+        raise ValueError("User profile is required to generate application message.")
 
-    prompt = f"""Write a polite, concise job application message in English using the following profile and job details.
-Profile: {profile_text}
-Job Title: {job_title}
-Job Description: {job_description}
-Job Requirements: {job_requirements or "None"}
+    name = user_profile.get("name", "An AI professional")
+    skills = ', '.join(user_profile.get("skills", [])) or "various technologies"
+    bio = user_profile.get("bio", "")
+
+    prompt = f"""
+You are an AI assistant writing a job application message.
+
+USER PROFILE:
+Name: {name}
+Skills: {skills}
+Bio: {bio}
+
+JOB DETAILS:
+Title: {job_title}
+Description: {job_description}
+Requirements: {job_requirements or "None"}
+
+Write a concise and professional message to apply for the job.
 """
 
-    # Print prompt length for debugging
-    print(f"Prompt Length: {len(prompt)} characters")
+    # Debug prompt length
+    print(f"[DEBUG] Prompt Length: {len(prompt)} characters")
 
-    # Tokenize input with truncation if necessary
-    input_ids = tokenizer(prompt, return_tensors="pt", max_length=1024, truncation=True).input_ids
+    input_ids = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=1024).input_ids
 
     with torch.no_grad():
-        # Generate a longer and richer response
         output_ids = model.generate(
             input_ids,
             max_length=400,
