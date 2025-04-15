@@ -1,28 +1,22 @@
-# job_scoring.py
 from transformers import T5ForConditionalGeneration, T5Tokenizer
 import torch
 
-# Load FLAN-T5 model & tokenizer
 model_name = "google/flan-t5-small"
 tokenizer = T5Tokenizer.from_pretrained(model_name)
 model = T5ForConditionalGeneration.from_pretrained(model_name)
 
-def score_job_relevance(job_title, job_description, job_requirements=None, user_profile=None):
-    if not user_profile:
-        return 0.0  # Default to 0 if profile is missing
+def score_job_relevance(job_title, job_description, job_requirements, user_profile):
+    if not user_profile or not isinstance(user_profile, dict):
+        return 0.0
 
-    # Safely get profile fields
-    skills = ', '.join(user_profile.get("skills", []))
-    bio = user_profile.get("bio", "")
-
-    profile_text = f"My skills are: {skills}. My bio: {bio}"
+    profile_text = f"My skills are: {', '.join(user_profile.get('skills', []))}. My bio: {user_profile.get('bio', '')}"
 
     prompt = f"""Based on the following profile and job, rate the relevance from 0 to 10 (only output the number).
 
 Profile: {profile_text}
 Job Title: {job_title}
 Job Description: {job_description}
-Job Requirements: {job_requirements or "None"}
+Job Requirements: {job_requirements}
 """
 
     input_ids = tokenizer(prompt, return_tensors="pt", max_length=512, truncation=True).input_ids

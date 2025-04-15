@@ -12,6 +12,10 @@ def identify_field_and_fill(label_text, placeholder_text=None, surrounding_text=
         print("[ERROR] User data is required.")
         return None
 
+    # Ensure that 'bio' is part of the user profile (it should be if passed correctly from the agent)
+    bio = user_data.get('bio', 'No bio provided.')
+
+    # Construct the prompt to include the user's bio
     prompt = f"""
 You are a form-filling assistant. You will receive label and placeholder text from a web form field.
 Based on the meaning, choose the most suitable value from this user's profile:
@@ -33,4 +37,5 @@ If you can't determine it, reply with "UNKNOWN".
     outputs = model.generate(input_ids, max_length=50, do_sample=False)
     result = tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
 
+    # If model returns "UNKNOWN", return None
     return None if result.upper() == "UNKNOWN" else result

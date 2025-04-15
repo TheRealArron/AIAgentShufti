@@ -1,17 +1,49 @@
 import asyncio
 from playwright.async_api import async_playwright
 from bs4 import BeautifulSoup
+from job_scoring import score_job_relevance  # Assuming you import the scoring function
 
 BASE_URL = "https://app.shufti.jp/jobs/search"
 LOGIN_URL = "https://app.shufti.jp/login"
 
-class MessagingAgent:
-    def __init__(self, user_name="Your AI Agent"):
-        self.user_name = user_name  # Store user name
 
-    def send_message(self, job_id, message):
+class MessagingAgent:
+    def __init__(self, user_name="Your AI Agent", user_profile=None):
+        self.user_name = user_name  # Store user name
+        self.user_profile = user_profile  # Store user profile
+
+    def send_message(self, job_id, job_title, job_description, job_requirements):
+        # Generate the message based on job details and user profile
+        if not self.user_profile:
+            print(f"Sending default message for Job {job_id}: {job_title} (from {self.user_name})")
+            return True
+
+        message = self.generate_application_message(job_title, job_description, job_requirements)
         print(f"Sending message for Job {job_id}: {message} (from {self.user_name})")
         return True
+
+    def generate_application_message(self, job_title, job_description, job_requirements):
+        if not self.user_profile or not isinstance(self.user_profile, dict):
+            return "Hello, I’m interested in this job. Please let me know more."
+
+        profile_text = f"My name is {self.user_profile.get('name', 'Anonymous')}. I have experience in {', '.join(self.user_profile.get('skills', []))}. {self.user_profile.get('bio', '')}"
+
+        prompt = f"""Write a polite, concise job application message in English using the following profile and job details.
+Profile: {profile_text}
+Job Title: {job_title}
+Job Description: {job_description}
+Job Requirements: {job_requirements}
+"""
+
+        # Assuming T5 model-based message generation (same as previous code)
+        input_ids = tokenizer(prompt, return_tensors="pt", max_length=1024, truncation=True).input_ids
+        with torch.no_grad():
+            output_ids = model.generate(input_ids, max_length=400, num_beams=5, early_stopping=True,
+                                        no_repeat_ngram_size=2)
+
+        message = tokenizer.decode(output_ids[0], skip_special_tokens=True)
+        return message
+
 
 class JobScraper:
     def __init__(self, email, password, max_pages=2, delay=5):
@@ -29,7 +61,7 @@ class JobScraper:
         await page.click("#submit")
         await page.wait_for_timeout(5000)
 
-    async def crawl_jobs(self):
+    async def crawl_jobs(self, user_profile):
         jobs = []
         async with async_playwright() as p:
             browser = await p.chromium.launch(headless=True)
@@ -55,19 +87,44 @@ class JobScraper:
 
                     title = job_soup.find("h1")
                     description = job_soup.find("div", class_="job-description")
+                    requirements = job_soup.find("div", class_="job-requirements")
 
-                    jobs.append({
+                    job = {
                         "id": job_url.split("/")[-1],
                         "title": title.get_text(strip=True) if title else "No Title Found",
                         "description": description.get_text(strip=True) if description else "No Description Found",
+                        "requirements": requirements.get_text(strip=True) if requirements else "No Requirements Found",
                         "link": job_url
-                    })
+                    }
+
+                    # Score the job relevance before adding to the list
+                    relevance_score = score_job_relevance(job['title'], job['description'], job['requirements'],
+                                                          user_profile)
+                    if relevance_score >= 7.0:  # Adjust threshold as needed
+                        jobs.append(job)
 
                 await asyncio.sleep(self.delay)
             await browser.close()
         return jobs
 
+
 class ShuftiSession:
-    def __init__(self, email, password, user_name="Your AI Agent"):
+    def __init__(self, email, password, user_name="Your AI Agent", user_profile=None):
+        # If user_profile is not provided, create a default profile
+        if user_profile is None:
+            user_profile = {
+                "name": user_name,
+                "email": email,
+                "skills": [],
+                "bio": "User bio information not provided."
+            }
         self.scraper = JobScraper(email, password)
-        self.messaging_agent = MessagingAgent(user_name)  # Pass user name to MessagingAgent
+        self.messaging_agent = MessagingAgent(user_name)
+        self.user_profile = user_profile  # Save the user profile in the session
+
+
+    async def process_jobs(self):
+        jobs = await self.scraper.crawl_jobs(self.messaging_agent.user_profile)
+        for job in jobs:
+            self.messaging_agent.send_message(job['id'], job['title'], job['description'], job['requirements'])
+

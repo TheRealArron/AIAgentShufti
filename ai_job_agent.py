@@ -80,15 +80,22 @@ def attempt_form_submission(job_url, user_profile):
 
 
 class AIJobAgent:
-    def __init__(self, user_session, user_name="Your AI Agent", user_email=None, user_skills=None):
+    def __init__(self, user_session, user_name="Your AI Agent", user_email=None, user_skills=None, user_bio="No bio provided."):
         self.session = user_session
         self.user_name = user_name
         self.user_email = user_email
         self.user_skills = user_skills or []
+        self.user_bio = user_bio
+        self.user_profile = {
+            "name": self.user_name,
+            "email": self.user_email,
+            "skills": self.user_skills,
+            "bio": self.user_bio
+        }
         self.applied_jobs = load_applied_jobs()
 
     async def run(self, log_callback):
-        jobs = await self.session.scraper.crawl_jobs()
+        jobs = await self.session.scraper.crawl_jobs(self.user_profile)
         for job in jobs:
             job_id = job.get("id")
             if not job_id or job_id in self.applied_jobs:
@@ -101,7 +108,7 @@ class AIJobAgent:
                 "name": self.user_name,
                 "email": self.user_email,
                 "skills": self.user_skills,
-                "bio": "No bio provided."
+                "bio": self.user_bio  # Include bio here
             }
 
             # Score relevance
@@ -109,8 +116,9 @@ class AIJobAgent:
                 job["title"],
                 job["description"],
                 job.get("requirements", ""),
-                user_profile=user_profile
+                user_profile=self.user_profile
             )
+
             log_callback(f"[RELEVANCE SCORE] Job {job_id} scored {score:.2f}\n")
 
             if not is_relevant_job(job):
@@ -131,7 +139,7 @@ class AIJobAgent:
                 job["title"],
                 job["description"],
                 job.get("requirements", ""),
-                user_profile=user_profile
+                user_profile=self.user_profile
             )
 
             success = self.session.messaging_agent.send_message(job_id, message)
@@ -146,7 +154,7 @@ class AIJobAgent:
             await asyncio.sleep(2)
 
 
-async def run_agent_with_name(email, password, name, skills, log_callback=print):
+async def run_agent_with_name(email, password, name, skills, bio, log_callback=print):
     session = ShuftiSession(email, password, user_name=name)
-    agent = AIJobAgent(session, user_name=name, user_email=email, user_skills=skills)
+    agent = AIJobAgent(session, user_name=name, user_email=email, user_skills=skills, user_bio=bio)  # Pass bio here
     await agent.run(log_callback)

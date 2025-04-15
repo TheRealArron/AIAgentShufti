@@ -9,14 +9,15 @@ def fill_and_submit_form(driver, form_data):
 
     Args:
         driver (webdriver): Selenium WebDriver instance
-        form_data (dict): Dictionary with keys like 'name', 'email', 'message'
+        form_data (dict): Dictionary with keys like 'name', 'email', 'message', 'bio'
     """
     soup = BeautifulSoup(driver.page_source, 'html.parser')
 
     field_keywords = {
         'name': ['name', 'お名前', '氏名'],
         'email': ['email', 'メール'],
-        'message': ['message', '自己紹介', '紹介文', '志望動機']
+        'message': ['message', '自己紹介', '紹介文', '志望動機'],
+        'bio': ['bio', '自己紹介', 'プロフィール']  # Add bio-related keywords here
     }
 
     for input_tag in soup.find_all(['input', 'textarea']):
@@ -33,6 +34,7 @@ def fill_and_submit_form(driver, form_data):
 
         text = f"{input_name} {placeholder} {aria_label} {label_text}"
 
+        # Fill in fields based on keywords
         for key, keywords in field_keywords.items():
             if any(k in text for k in keywords) and key in form_data:
                 try:
