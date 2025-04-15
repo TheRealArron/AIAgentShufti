@@ -7,8 +7,10 @@ from user_profile import get_user_profile
 tokenizer = T5Tokenizer.from_pretrained("google/flan-t5-small")
 model = T5ForConditionalGeneration.from_pretrained("google/flan-t5-small")
 
-def identify_field_and_fill(label_text, placeholder_text=None, surrounding_text=None):
-    user_data = get_user_profile()
+def identify_field_and_fill(label_text, placeholder_text=None, surrounding_text=None, user_data=None):
+    if user_data is None:
+        print("[ERROR] User data is required.")
+        return None
 
     prompt = f"""
 You are a form-filling assistant. You will receive label and placeholder text from a web form field.

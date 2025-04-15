@@ -1,6 +1,6 @@
 import asyncio
 import json
-import time
+import logging
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
@@ -23,6 +23,8 @@ Best regards,
 APPLIED_JOBS_FILE = "applied_jobs.json"
 LOG_FILE = "application_log.txt"
 
+# Set up logging
+logging.basicConfig(level=logging.DEBUG, filename=LOG_FILE, filemode='a', format='%(asctime)s - %(levelname)s - %(message)s')
 
 def load_applied_jobs():
     try:
@@ -31,27 +33,23 @@ def load_applied_jobs():
     except (FileNotFoundError, json.JSONDecodeError):
         return []
 
-
 def save_applied_jobs(applied_jobs):
     with open(APPLIED_JOBS_FILE, "w") as f:
         json.dump(applied_jobs, f)
 
-
 def log_application_status(job_id, success):
-    with open(LOG_FILE, "a") as f:
-        status = "successfully" if success else "failed"
-        f.write(f"Job {job_id} was {status} applied.\n")
-
+    status = "successfully" if success else "failed"
+    logging.info(f"Job {job_id} was {status} applied.")
 
 def attempt_form_submission(job_url, user_profile):
-    try:
-        driver = webdriver.Chrome(ChromeDriverManager().install())
-    except Exception as e:
-        print(f"[ERROR] Failed to launch browser: {e}")
+    if not user_profile or not isinstance(user_profile, dict):
+        logging.error("[ERROR] Invalid user profile provided to form submission.")
         return
 
     try:
+        driver = webdriver.Chrome(ChromeDriverManager().install())
         driver.get(job_url)
+
         form_data = {
             "name": user_profile["name"],
             "email": user_profile.get("email", ""),
@@ -65,23 +63,24 @@ def attempt_form_submission(job_url, user_profile):
                 placeholder = label.find_next("input") or label.find_next("textarea")
                 placeholder_text = placeholder.get("placeholder") if placeholder else None
 
-                value = identify_field_and_fill(label_text, placeholder_text)
+                value = identify_field_and_fill(label_text, placeholder_text, user_data=user_profile)
 
                 if value:
-                    form_data[label_text.lower()] = value
+                    # Sanitize label text to avoid issues with invalid dictionary keys
+                    sanitized_label = label_text.lower().replace(" ", "_")
+                    form_data[sanitized_label] = value
                 else:
-                    print(f"[WARNING] No value identified for label '{label_text}'.")
+                    logging.warning(f"No value identified for label '{label_text}'.")
 
             except Exception as e:
-                print(f"[ERROR] Failed processing form label: {e}")
+                logging.error(f"Failed processing form label: {e}")
 
         fill_and_submit_form(driver, form_data)
-        print("[FORM FILLED] Form filled and submitted.")
+        logging.info("[FORM FILLED] Form filled and submitted.")
     except Exception as e:
-        print(f"[ERROR] Form submission failed for {job_url}: {e}")
+        logging.error(f"Form submission failed for {job_url}: {e}")
     finally:
         driver.quit()
-
 
 class AIJobAgent:
     def __init__(self, user_session, user_name="Your AI Agent", user_email=None, user_skills=None):
@@ -98,6 +97,9 @@ class AIJobAgent:
             if not job_id or job_id in self.applied_jobs:
                 continue
 
+            # Log job data for debugging
+            logging.debug(f"[DEBUG] Job data: {job}")
+
             # Optional: log relevance score
             score = score_job_relevance(job["title"], job["description"], job.get("requirements", ""))
             log_callback(f"[RELEVANCE SCORE] Job {job_id} scored {score:.2f}\n")
@@ -106,13 +108,20 @@ class AIJobAgent:
                 log_callback(f"[SKIPPED] Job {job_id} deemed irrelevant.\n")
                 continue
 
-            # Better form detection (basic heuristic)
+            # Better form detection
             if any(kw in job["description"].lower() for kw in ["fill out", "application form", "submit your info"]):
-                attempt_form_submission(job["link"], {
+                user_profile = {
                     "name": self.user_name,
                     "email": self.user_email,
                     "skills": self.user_skills,
-                })
+                }
+
+                if not user_profile.get("name") or not user_profile.get("email") or not user_profile.get("skills"):
+                    logging.error(f"[ERROR] Missing user profile details: {user_profile}")
+                    continue
+
+                logging.debug(f"[DEBUG] Received user_profile: {user_profile}")
+                attempt_form_submission(job["link"], user_profile)
                 log_callback(f"[FORM SUBMITTED] Job {job_id}\n")
                 self.applied_jobs.append(job_id)
                 save_applied_jobs(self.applied_jobs)
@@ -138,7 +147,6 @@ class AIJobAgent:
 
             # Add cooldown between jobs
             await asyncio.sleep(2)
-
 
 async def run_agent_with_name(email, password, name, skills, log_callback=print):
     session = ShuftiSession(email, password, user_name=name)
