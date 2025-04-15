@@ -11,14 +11,6 @@ from form_filler import fill_and_submit_form
 from field_mapper import identify_field_and_fill
 from job_scoring import score_job_relevance  # Optional logging
 
-APPLICATION_TEMPLATE = """
-Hello {client_name},
-
-I am very interested in the position of {job_title}. I am confident I can complete this task efficiently using my AI Agent. Let's discuss further!
-
-Best regards,
-{user_name}
-"""
 
 APPLIED_JOBS_FILE = "applied_jobs.json"
 LOG_FILE = "application_log.txt"

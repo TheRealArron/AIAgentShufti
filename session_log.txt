@@ -1,3 +1,6 @@
 Starting agent...
 [ERROR] 'NoneType' object is not subscriptable
 Agent process finished.
+Starting agent...
+[ERROR] 'NoneType' object is not subscriptable
+Agent process finished.
