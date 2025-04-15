@@ -8,7 +8,14 @@ tokenizer = T5Tokenizer.from_pretrained(model_name)
 model = T5ForConditionalGeneration.from_pretrained(model_name)
 
 def score_job_relevance(job_title, job_description, job_requirements=None, user_profile=None):
-    profile_text = f"My skills are: {', '.join(user_profile['skills'])}. My bio: {user_profile['bio']}"
+    if not user_profile:
+        return 0.0  # Default to 0 if profile is missing
+
+    # Safely get profile fields
+    skills = ', '.join(user_profile.get("skills", []))
+    bio = user_profile.get("bio", "")
+
+    profile_text = f"My skills are: {skills}. My bio: {bio}"
 
     prompt = f"""Based on the following profile and job, rate the relevance from 0 to 10 (only output the number).
 
