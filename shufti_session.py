@@ -1,4 +1,3 @@
-# shufti_session.py
 import asyncio
 from playwright.async_api import async_playwright
 from bs4 import BeautifulSoup
@@ -7,8 +6,11 @@ BASE_URL = "https://app.shufti.jp/jobs/search"
 LOGIN_URL = "https://app.shufti.jp/login"
 
 class MessagingAgent:
+    def __init__(self, user_name="Your AI Agent"):
+        self.user_name = user_name  # Store user name
+
     def send_message(self, job_id, message):
-        print(f"Sending message for Job {job_id}: {message}")
+        print(f"Sending message for Job {job_id}: {message} (from {self.user_name})")
         return True
 
 class JobScraper:
@@ -66,6 +68,6 @@ class JobScraper:
         return jobs
 
 class ShuftiSession:
-    def __init__(self, email, password):
+    def __init__(self, email, password, user_name="Your AI Agent"):
         self.scraper = JobScraper(email, password)
-        self.messaging_agent = MessagingAgent()
+        self.messaging_agent = MessagingAgent(user_name)  # Pass user name to MessagingAgent
