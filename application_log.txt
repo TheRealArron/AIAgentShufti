@@ -1,1 +1,2 @@
-2025-04-15 23:24:31,162 - DEBUG - Using proactor: IocpProactor
+2025-04-16 00:12:14,572 - DEBUG - Attempting to release lock 2040255616000 on C:\Users\regin\.cache\huggingface\hub\.locks\models--Helsinki-NLP--opus-mt-ja-en\9aa2a8b5ae84d3a523cc956bc257cf45c8a25438c328fadf9317f55d49369a1a.lock
+2025-04-16 00:12:14,574 - DEBUG - Lock 2040255616000 released on C:\Users\regin\.cache\huggingface\hub\.locks\models--Helsinki-NLP--opus-mt-ja-en\9aa2a8b5ae84d3a523cc956bc257cf45c8a25438c328fadf9317f55d49369a1a.lock
