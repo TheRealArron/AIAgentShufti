@@ -39,3 +39,28 @@ If you can't determine it, reply with "UNKNOWN".
 
     # If model returns "UNKNOWN", return None
     return None if result.upper() == "UNKNOWN" else result
+
+def extract_form_data(labels, user_profile):
+    """
+    Extract and map form data using the user's profile based on labels and placeholders.
+
+    :param labels: List of labels (strings) to map the values to
+    :param user_profile: Dictionary containing the user's profile
+    :return: Dictionary containing the field values to be filled in the form
+    """
+    form_data = {}
+
+    for label in labels:
+        # Attempt to identify the corresponding value for each field
+        value = identify_field_and_fill(label, user_data=user_profile)
+        if value:
+            form_data[label] = value
+        else:
+            print(f"[WARNING] No value found for label: {label}")
+
+    return form_data
+
+# Example usage (assuming user_profile is passed):
+# user_profile = get_user_profile()
+# labels = ["Name", "Email", "Bio"]
+# form_data = extract_form_data(labels, user_profile)

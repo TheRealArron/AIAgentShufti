@@ -1,0 +1,89 @@
+[INFO] Starting job agent...
+[RELEVANCE SCORE] Job 369277 scored 0.00
+[SKIPPED] Job 369277 deemed irrelevant.
+[RELEVANCE SCORE] Job 370675 scored 0.00
+[SKIPPED] Job 370675 deemed irrelevant.
+[RELEVANCE SCORE] Job 364945 scored 0.00
+[SKIPPED] Job 364945 deemed irrelevant.
+[RELEVANCE SCORE] Job 364780 scored 0.00
+[SKIPPED] Job 364780 deemed irrelevant.
+[RELEVANCE SCORE] Job 370903 scored 0.00
+[SKIPPED] Job 370903 deemed irrelevant.
+[RELEVANCE SCORE] Job 370928 scored 0.00
+[SKIPPED] Job 370928 deemed irrelevant.
+[RELEVANCE SCORE] Job 370927 scored 0.00
+[SKIPPED] Job 370927 deemed irrelevant.
+[RELEVANCE SCORE] Job 370884 scored 0.00
+[SKIPPED] Job 370884 deemed irrelevant.
+[RELEVANCE SCORE] Job 370896 scored 0.00
+[SKIPPED] Job 370896 deemed irrelevant.
+[RELEVANCE SCORE] Job 370865 scored 0.00
+[SKIPPED] Job 370865 deemed irrelevant.
+[RELEVANCE SCORE] Job 367567 scored 0.00
+[SKIPPED] Job 367567 deemed irrelevant.
+[RELEVANCE SCORE] Job 370760 scored 0.00
+[SKIPPED] Job 370760 deemed irrelevant.
+[RELEVANCE SCORE] Job 325380 scored 0.00
+[SKIPPED] Job 325380 deemed irrelevant.
+[RELEVANCE SCORE] Job 370224 scored 0.00
+[SKIPPED] Job 370224 deemed irrelevant.
+[RELEVANCE SCORE] Job 358089 scored 0.00
+[SKIPPED] Job 358089 deemed irrelevant.
+[RELEVANCE SCORE] Job 370552 scored 0.00
+[SKIPPED] Job 370552 deemed irrelevant.
+[RELEVANCE SCORE] Job 370902 scored 0.00
+[SKIPPED] Job 370902 deemed irrelevant.
+[RELEVANCE SCORE] Job 369266 scored 0.00
+[SKIPPED] Job 369266 deemed irrelevant.
+[RELEVANCE SCORE] Job 370707 scored 0.00
+[SKIPPED] Job 370707 deemed irrelevant.
+[RELEVANCE SCORE] Job 370921 scored 0.00
+[SKIPPED] Job 370921 deemed irrelevant.
+[RELEVANCE SCORE] Job 370923 scored 0.00
+[SKIPPED] Job 370923 deemed irrelevant.
+[RELEVANCE SCORE] Job 369277 scored 0.00
+[SKIPPED] Job 369277 deemed irrelevant.
+[RELEVANCE SCORE] Job 370611 scored 0.00
+[SKIPPED] Job 370611 deemed irrelevant.
+[RELEVANCE SCORE] Job 370922 scored 0.00
+[SKIPPED] Job 370922 deemed irrelevant.
+[RELEVANCE SCORE] Job 370775 scored 0.00
+[SKIPPED] Job 370775 deemed irrelevant.
+[RELEVANCE SCORE] Job 370397 scored 0.00
+[SKIPPED] Job 370397 deemed irrelevant.
+[RELEVANCE SCORE] Job 370398 scored 0.00
+[SKIPPED] Job 370398 deemed irrelevant.
+[RELEVANCE SCORE] Job 370917 scored 0.00
+[SKIPPED] Job 370917 deemed irrelevant.
+[RELEVANCE SCORE] Job 370913 scored 0.00
+[SKIPPED] Job 370913 deemed irrelevant.
+[RELEVANCE SCORE] Job 370910 scored 0.00
+[SKIPPED] Job 370910 deemed irrelevant.
+[RELEVANCE SCORE] Job 370854 scored 0.00
+[SKIPPED] Job 370854 deemed irrelevant.
+[RELEVANCE SCORE] Job 370866 scored 0.00
+[SKIPPED] Job 370866 deemed irrelevant.
+[RELEVANCE SCORE] Job 360618 scored 0.00
+[SKIPPED] Job 360618 deemed irrelevant.
+[RELEVANCE SCORE] Job 370904 scored 0.00
+[SKIPPED] Job 370904 deemed irrelevant.
+[RELEVANCE SCORE] Job 370918 scored 0.00
+[SKIPPED] Job 370918 deemed irrelevant.
+[RELEVANCE SCORE] Job 370919 scored 0.00
+[SKIPPED] Job 370919 deemed irrelevant.
+[RELEVANCE SCORE] Job 370915 scored 0.00
+[SKIPPED] Job 370915 deemed irrelevant.
+[RELEVANCE SCORE] Job 370912 scored 0.00
+[SKIPPED] Job 370912 deemed irrelevant.
+[RELEVANCE SCORE] Job 368086 scored 0.00
+[SKIPPED] Job 368086 deemed irrelevant.
+[RELEVANCE SCORE] Job 367903 scored 0.00
+[SKIPPED] Job 367903 deemed irrelevant.
+[RELEVANCE SCORE] Job 364573 scored 0.00
+[SKIPPED] Job 364573 deemed irrelevant.
+[RELEVANCE SCORE] Job 358855 scored 0.00
+[SKIPPED] Job 358855 deemed irrelevant.
+[RELEVANCE SCORE] Job 356259 scored 0.00
+[SKIPPED] Job 356259 deemed irrelevant.
+[INFO] Agent process finished.
+[INFO] Starting job agent...
